@@ -1,0 +1,189 @@
+@model IEnumerable<ABCRetailWebApp.Models.Product>
+
+@{
+    ViewData["Title"] = "Products";
+}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="mb-1"><i class="fas fa-box me-2" style="color: #667eea;"></i>Products</h1>
+        <p class="text-muted mb-0">Manage your product catalog and inventory</p>
+    </div>
+    <a asp-action="Create" class="btn btn-custom-primary btn-custom">
+        <i class="fas fa-plus me-2"></i>Add New Product
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- Statistics Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card card-custom stat-card primary">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon primary me-3">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title mb-0">@Model.Count()</h3>
+                        <p class="card-text text-muted mb-0">Total Products</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-custom stat-card success">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon success me-3">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title mb-0">R @Model.Sum(p => p.Price).ToString("N2")</h3>
+                        <p class="card-text text-muted mb-0">Total Value</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-custom stat-card warning">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon warning me-3">
+                        <i class="fas fa-cubes"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title mb-0">@Model.Sum(p => p.StockQuantity)</h3>
+                        <p class="card-text text-muted mb-0">Total Stock</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="card card-custom mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search products by name, category, or price...">
+                </div>
+            </div>
+            <div class="col-md-6 text-end">
+                <small class="text-muted">Showing @Model.Count() products</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Products Grid -->
+@if (Model != null && Model.Any())
+{
+    <div class="row g-4" id="productsGrid">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-6 col-lg-4 product-item">
+                <div class="card card-custom h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width: 60px; height: 60px; background: var(--primary-gradient);">
+                                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                {
+                                    <img src="@item.ImageUrl" alt="@item.Name" class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;" />
+                                }
+                                else
+                                {
+                                    <span class="text-white fw-bold" style="font-size: 1.5rem;">@(string.IsNullOrEmpty(item.Name) ? "?" : item.Name[0].ToString().ToUpper())</span>
+                                }
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="card-title mb-1">@item.Name</h5>
+                                <p class="card-text text-muted small mb-2">@item.Category</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-success">R @item.Price.ToString("N2")</span>
+                                    <span class="badge bg-info">@item.StockQuantity in stock</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        @if (!string.IsNullOrEmpty(item.Description))
+                        {
+                            <p class="card-text text-muted small mb-3">@item.Description.Substring(0, Math.Min(100, item.Description.Length))@if (item.Description.Length > 100) { <text>...</text> }</p>
+                        }
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Added: @item.CreatedAt.ToString("MMM dd, yyyy")</small>
+                            <div class="btn-group" role="group">
+                                <a asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-info btn-sm" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@item.ProductId" class="btn btn-warning btn-sm" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.ProductId" class="btn btn-danger btn-sm" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="card card-custom">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+            <h5 class="card-title">No Products Found</h5>
+            <p class="card-text text-muted">Get started by adding your first product</p>
+            <a asp-action="Create" class="btn btn-custom-primary btn-custom">
+                <i class="fas fa-plus me-2"></i>Add First Product
+            </a>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const productsGrid = document.getElementById('productsGrid');
+            
+            if (searchInput && productsGrid) {
+                searchInput.addEventListener('keyup', function() {
+                    const filter = this.value.toLowerCase();
+                    const products = productsGrid.getElementsByClassName('product-item');
+                    
+                    for (let i = 0; i < products.length; i++) {
+                        const product = products[i];
+                        const text = product.textContent.toLowerCase();
+                        product.style.display = text.indexOf(filter) > -1 ? '' : 'none';
+                    }
+                });
+            }
+        });
+    </script>
+}

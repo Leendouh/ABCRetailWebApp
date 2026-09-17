@@ -1,0 +1,243 @@
+﻿@model ABCRetailWebApp.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<!-- Hero Section -->
+<div class="hero-section text-center">
+    <div class="container position-relative">
+        <h1 class="hero-title">Welcome to ABC Retail</h1>
+        <p class="hero-subtitle">Modern Retail Management System powered by Azure Cloud Services</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a asp-controller="Order" asp-action="Create" class="btn btn-light btn-lg btn-custom">
+                <i class="fas fa-plus-circle me-2"></i>Create New Order
+            </a>
+            <a asp-controller="Customer" asp-action="Create" class="btn btn-outline-light btn-lg btn-custom">
+                <i class="fas fa-user-plus me-2"></i>Add Customer
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="container mb-5">
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card card-custom stat-card primary">
+                <div class="card-body">
+                    <div class="stat-icon primary">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="card-title mb-1">@Model.TotalCustomers</h3>
+                    <p class="card-text text-muted mb-0">Total Customers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-custom stat-card success">
+                <div class="card-body">
+                    <div class="stat-icon success">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <h3 class="card-title mb-1">@Model.TotalProducts</h3>
+                    <p class="card-text text-muted mb-0">Total Products</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-custom stat-card warning">
+                <div class="card-body">
+                    <div class="stat-icon warning">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h3 class="card-title mb-1">@Model.TotalOrders</h3>
+                    <p class="card-text text-muted mb-0">Total Orders</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-custom stat-card info">
+                <div class="card-body">
+                    <div class="stat-icon info">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <h3 class="card-title mb-1">R @Model.TotalRevenue.ToString("N2")</h3>
+                    <p class="card-text text-muted mb-0">Total Revenue</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="container mb-5">
+    <h2 class="mb-4">Quick Actions</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card card-custom h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-user-plus fa-3x" style="color: #667eea;"></i>
+                    </div>
+                    <h5 class="card-title">Add Customer</h5>
+                    <p class="card-text text-muted">Register new customers to your system</p>
+                    <a asp-controller="Customer" asp-action="Create" class="btn btn-custom-primary btn-custom">
+                        <i class="fas fa-plus me-2"></i>Add Customer
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-custom h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-box-open fa-3x" style="color: #4facfe;"></i>
+                    </div>
+                    <h5 class="card-title">Add Product</h5>
+                    <p class="card-text text-muted">Expand your product catalog</p>
+                    <a asp-controller="Product" asp-action="Create" class="btn btn-custom-primary btn-custom">
+                        <i class="fas fa-plus me-2"></i>Add Product
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-custom h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-receipt fa-3x" style="color: #f5576c;"></i>
+                    </div>
+                    <h5 class="card-title">Create Order</h5>
+                    <p class="card-text text-muted">Process new customer orders</p>
+                    <a asp-controller="Order" asp-action="Create" class="btn btn-custom-primary btn-custom">
+                        <i class="fas fa-plus me-2"></i>Create Order
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order Status Overview -->
+<div class="container mb-5">
+    <h2 class="mb-4">Order Status Overview</h2>
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card card-custom">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">Pending Orders</h5>
+                        <span class="badge bg-warning fs-6">@Model.PendingOrders</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        @{
+                            var pendingPercentage = Model.TotalOrders > 0 ? (Model.PendingOrders * 100.0 / Model.TotalOrders) : 0;
+                        }
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: @pendingPercentage%;" aria-valuenow="@pendingPercentage" aria-valuemin="0" aria-valuemax="100">@pendingPercentage.ToString("0")%</div>
+                    </div>
+                    <p class="text-muted mt-2 mb-0">@Model.PendingOrders orders awaiting processing</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card card-custom">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">Completed Orders</h5>
+                        <span class="badge bg-success fs-6">@Model.CompletedOrders</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        @{
+                            var completedPercentage = Model.TotalOrders > 0 ? (Model.CompletedOrders * 100.0 / Model.TotalOrders) : 0;
+                        }
+                        <div class="progress-bar bg-success" role="progressbar" style="width: @completedPercentage%;" aria-valuenow="@completedPercentage" aria-valuemin="0" aria-valuemax="100">@completedPercentage.ToString("0")%</div>
+                    </div>
+                    <p class="text-muted mt-2 mb-0">@Model.CompletedOrders orders successfully delivered</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Orders -->
+<div class="container mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Recent Orders</h2>
+        <a asp-controller="Order" asp-action="Index" class="btn btn-outline-primary btn-custom">
+            <i class="fas fa-list me-2"></i>View All Orders
+        </a>
+    </div>
+    
+    @if (Model.RecentOrders != null && Model.RecentOrders.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-custom table-hover">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model.RecentOrders)
+                    {
+                        <tr>
+                            <td><strong>@order.OrderId</strong></td>
+                            <td>@order.CustomerName</td>
+                            <td>@order.ProductName</td>
+                            <td>@order.Quantity</td>
+                            <td>R @order.TotalAmount.ToString("N2")</td>
+                            <td>
+                                <span class="badge bg-@(order.Status == "Pending" ? "warning" : order.Status == "Delivered" ? "success" : order.Status == "Cancelled" ? "danger" : "info")">
+                                    @order.Status
+                                </span>
+                            </td>
+                            <td>@order.OrderDate.ToString("MMM dd, yyyy")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="card card-custom">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                <h5 class="card-title">No Orders Yet</h5>
+                <p class="card-text text-muted">Start by creating your first order</p>
+                <a asp-controller="Order" asp-action="Create" class="btn btn-custom-primary btn-custom">
+                    <i class="fas fa-plus me-2"></i>Create First Order
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- System Information -->
+<div class="container mb-5">
+    <div class="card card-custom">
+        <div class="card-body">
+            <h5 class="card-title mb-3">
+                <i class="fas fa-cloud me-2"></i>System Information
+            </h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-2"><strong>Platform:</strong> ASP.NET Core MVC (.NET 9.0)</p>
+                    <p class="mb-2"><strong>Storage:</strong> Azure Table Storage</p>
+                    <p class="mb-0"><strong>Messaging:</strong> Azure Queue Storage</p>
+                </div>
+                <div class="col-md-6">
+                    <p class="mb-2"><strong>Storage Account:</strong> ST10381088</p>
+                    <p class="mb-2"><strong>Tables:</strong> Customers, Products, Orders</p>
+                    <p class="mb-0"><strong>Queue:</strong> order-transactions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

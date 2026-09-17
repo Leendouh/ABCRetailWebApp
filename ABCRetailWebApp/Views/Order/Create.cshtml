@@ -1,0 +1,250 @@
+@model ABCRetailWebApp.Models.Order
+
+@{
+    ViewData["Title"] = "Create Order";
+}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="mb-1"><i class="fas fa-shopping-cart me-2" style="color: #667eea;"></i>Create Order</h1>
+        <p class="text-muted mb-0">Process a new customer order</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-custom">
+        <i class="fas fa-arrow-left me-2"></i>Back to List
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (!ViewData.ModelState.IsValid && ViewData.ModelState[""] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>@ViewData.ModelState[""]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card card-custom">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; background: var(--primary-gradient);">
+                        <i class="fas fa-shopping-cart text-white fa-lg"></i>
+                    </div>
+                    <div>
+                        <h5 class="card-title mb-0">Order Information</h5>
+                        <p class="card-text text-muted mb-0">Fill in the order details below</p>
+                    </div>
+                </div>
+
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Please fix the errors below
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-user me-1"></i>Select Customer
+                        </label>
+                        <select name="customerId" class="form-control" required id="customerSelect">
+                            <option value="">-- Select Customer --</option>
+                            @if (ViewBag.Customers != null)
+                            {
+                                foreach (var customer in ViewBag.Customers)
+                                {
+                                    <option value="@customer.CustomerId">@customer.FirstName @customer.LastName — @customer.Email</option>
+                                }
+                            }
+                        </select>
+                        <span class="text-danger field-validation-valid" data-valmsg-for="customerId" data-valmsg-replace="true"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-box me-1"></i>Select Product
+                        </label>
+                        <select name="productId" class="form-control" required id="productSelect">
+                            <option value="">-- Select Product --</option>
+                            @if (ViewBag.Products != null)
+                            {
+                                foreach (var product in ViewBag.Products)
+                                {
+                                    <option value="@product.ProductId" data-price="@product.Price">@product.Name — R @product.Price.ToString("N2")</option>
+                                }
+                            }
+                        </select>
+                        <span class="text-danger field-validation-valid" data-valmsg-for="productId" data-valmsg-replace="true"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-cubes me-1"></i>Quantity
+                        </label>
+                        <input type="number" name="quantity" class="form-control" required min="1" value="1" id="quantityInput" />
+                        <span class="text-danger field-validation-valid" data-valmsg-for="quantity" data-valmsg-replace="true"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-dollar-sign me-1"></i>Total Amount (R)
+                        </label>
+                        <input type="text" class="form-control bg-light" readonly id="totalAmountDisplay" value="R 0.00" />
+                        <small class="text-muted">Auto-calculated based on product price and quantity</small>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-map-marker-alt me-1"></i>Shipping Address
+                        </label>
+                        <textarea name="shippingAddress" class="form-control" rows="3" placeholder="Shipping address will be auto-filled from customer" id="shippingAddress"></textarea>
+                        <small class="text-muted">Auto-filled from selected customer</small>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary btn-custom">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-custom-primary btn-custom">
+                            <i class="fas fa-shopping-cart me-2"></i>Create Order
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card card-custom mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">
+                    <i class="fas fa-info-circle me-2" style="color: #667eea;"></i>Order Summary
+                </h5>
+                <div class="p-3 bg-light rounded mb-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span id="subtotalDisplay">R 0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Quantity:</span>
+                        <span id="quantityDisplay">0</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between fw-bold">
+                        <span>Total:</span>
+                        <span id="totalDisplay">R 0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card card-custom">
+            <div class="card-body">
+                <h5 class="card-title mb-3">
+                    <i class="fas fa-lightbulb me-2" style="color: #667eea;"></i>Order Tips
+                </h5>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Select customer first
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Choose product and quantity
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Verify shipping address
+                    </li>
+                    <li class="mb-0">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Review total before submit
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Store customer addresses for auto-fill
+        const customerAddresses = {};
+        @if (ViewBag.Customers != null)
+        {
+            foreach (var customer in ViewBag.Customers)
+            {
+                var escapedAddress = customer.Address.Replace("\\", "\\\\").Replace("'", "\\'").Replace("\n", " ").Replace("\r", " ");
+                @:customerAddresses['@customer.CustomerId'] = '@escapedAddress';
+            }
+        }
+
+        // Function to calculate total amount
+        function calculateTotal() {
+            const productSelect = document.getElementById('productSelect');
+            const quantityInput = document.getElementById('quantityInput');
+            const totalDisplay = document.getElementById('totalAmountDisplay');
+            const subtotalDisplay = document.getElementById('subtotalDisplay');
+            const quantityDisplay = document.getElementById('quantityDisplay');
+            const totalDisplaySide = document.getElementById('totalDisplay');
+            
+            const selectedOption = productSelect.options[productSelect.selectedIndex];
+            const price = selectedOption.getAttribute('data-price');
+            const quantity = parseInt(quantityInput.value) || 0;
+            
+            if (price && quantity > 0) {
+                const total = parseFloat(price) * quantity;
+                const formattedTotal = 'R ' + total.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                totalDisplay.value = formattedTotal;
+                subtotalDisplay.textContent = formattedTotal;
+                quantityDisplay.textContent = quantity;
+                totalDisplaySide.textContent = formattedTotal;
+            } else {
+                totalDisplay.value = 'R 0.00';
+                subtotalDisplay.textContent = 'R 0.00';
+                quantityDisplay.textContent = '0';
+                totalDisplaySide.textContent = 'R 0.00';
+            }
+        }
+
+        // Function to auto-fill shipping address
+        function fillShippingAddress() {
+            const customerSelect = document.getElementById('customerSelect');
+            const shippingAddress = document.getElementById('shippingAddress');
+            
+            const selectedCustomerId = customerSelect.value;
+            if (selectedCustomerId && customerAddresses[selectedCustomerId]) {
+                shippingAddress.value = customerAddresses[selectedCustomerId];
+            } else {
+                shippingAddress.value = '';
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            const productSelect = document.getElementById('productSelect');
+            const quantityInput = document.getElementById('quantityInput');
+            const customerSelect = document.getElementById('customerSelect');
+            
+            if (productSelect) {
+                productSelect.addEventListener('change', calculateTotal);
+            }
+            
+            if (quantityInput) {
+                quantityInput.addEventListener('input', calculateTotal);
+            }
+            
+            if (customerSelect) {
+                customerSelect.addEventListener('change', fillShippingAddress);
+            }
+        });
+    </script>
+}

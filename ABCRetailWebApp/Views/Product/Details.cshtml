@@ -1,0 +1,169 @@
+@model ABCRetailWebApp.Models.Product
+
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="mb-1"><i class="fas fa-box me-2" style="color: #667eea;"></i>Product Details</h1>
+        <p class="text-muted mb-0">View product information and inventory</p>
+    </div>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.ProductId" class="btn btn-custom-primary btn-custom me-2">
+            <i class="fas fa-edit me-2"></i>Edit Product
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-custom">
+            <i class="fas fa-arrow-left me-2"></i>Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-4">
+        <!-- Product Image Card -->
+        <div class="card card-custom mb-4">
+            <div class="card-body text-center">
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid rounded mb-3" style="max-height: 300px; object-fit: contain;" />
+                }
+                else
+                {
+                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 150px; height: 150px; background: var(--primary-gradient);">
+                        <span class="text-white fw-bold" style="font-size: 4rem;">@(string.IsNullOrEmpty(Model.Name) ? "?" : Model.Name[0].ToString().ToUpper())</span>
+                    </div>
+                }
+                <h4 class="card-title">@Model.Name</h4>
+                <p class="card-text text-muted mb-3">@Model.Category</p>
+                <div class="d-flex justify-content-center gap-2 mb-3">
+                    <span class="badge bg-success fs-6">R @Model.Price.ToString("N2")</span>
+                    <span class="badge bg-info fs-6">@Model.StockQuantity in stock</span>
+                </div>
+                <div class="d-flex justify-content-center gap-2">
+                    <span class="badge bg-primary">@(Model.StockQuantity > 0 ? "Available" : "Out of Stock")</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card card-custom">
+            <div class="card-body">
+                <h5 class="card-title mb-3">
+                    <i class="fas fa-bolt me-2" style="color: #667eea;"></i>Quick Actions
+                </h5>
+                <div class="d-grid gap-2">
+                    <a asp-controller="Order" asp-action="Create" class="btn btn-outline-primary btn-custom">
+                        <i class="fas fa-shopping-cart me-2"></i>Create Order
+                    </a>
+                    <a asp-action="Edit" asp-route-id="@Model.ProductId" class="btn btn-outline-warning btn-custom">
+                        <i class="fas fa-edit me-2"></i>Edit Product
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@Model.ProductId" class="btn btn-outline-danger btn-custom">
+                        <i class="fas fa-trash me-2"></i>Delete Product
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <!-- Product Information -->
+        <div class="card card-custom mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-4">
+                    <i class="fas fa-info-circle me-2" style="color: #667eea;"></i>Product Information
+                </h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Product ID</label>
+                        <p class="mb-0 fw-bold">@Model.ProductId</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Product Name</label>
+                        <p class="mb-0 fw-bold">@Model.Name</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Category</label>
+                        <p class="mb-0">@Model.Category</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Price</label>
+                        <p class="mb-0 fw-bold">R @Model.Price.ToString("N2")</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Stock Quantity</label>
+                        <p class="mb-0 fw-bold">@Model.StockQuantity units</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Created Date</label>
+                        <p class="mb-0">
+                            <i class="fas fa-calendar text-muted me-1"></i>@Model.CreatedAt.ToString("MMMM dd, yyyy")
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div class="card card-custom mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">
+                    <i class="fas fa-align-left me-2" style="color: #667eea;"></i>Description
+                </h5>
+                <div class="p-4 bg-light rounded">
+                    <p class="mb-0">@if (!string.IsNullOrEmpty(Model.Description)) { @Model.Description } else { <em class="text-muted">No description provided</em> }</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock Information -->
+        <div class="card card-custom">
+            <div class="card-body">
+                <h5 class="card-title mb-4">
+                    <i class="fas fa-warehouse me-2" style="color: #667eea;"></i>Stock Information
+                </h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-success d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background: var(--success-gradient);">
+                                    <i class="fas fa-cubes text-white"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Available Stock</small>
+                                    <p class="mb-0 fw-bold">@Model.StockQuantity units</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background: var(--warning-gradient);">
+                                    <i class="fas fa-dollar-sign text-white"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Unit Price</small>
+                                    <p class="mb-0 fw-bold">R @Model.Price.ToString("N2")</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 bg-light rounded">
+                    <div class="d-flex">
+                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; background: var(--primary-gradient);">
+                            <i class="fas fa-chart-line text-white fa-lg"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 fw-bold">Total Value: R @(Model.Price * Model.StockQuantity).ToString("N2")</p>
+                            <small class="text-muted">Estimated inventory value</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

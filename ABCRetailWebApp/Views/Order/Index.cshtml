@@ -1,0 +1,207 @@
+@model IEnumerable<ABCRetailWebApp.Models.Order>
+
+@{
+    ViewData["Title"] = "Orders";
+}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="mb-1"><i class="fas fa-shopping-cart me-2" style="color: #667eea;"></i>Orders</h1>
+        <p class="text-muted mb-0">Process and track customer orders</p>
+    </div>
+    <a asp-action="Create" class="btn btn-custom-primary btn-custom">
+        <i class="fas fa-plus me-2"></i>Create New Order
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- Statistics Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card card-custom stat-card primary">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon primary me-3">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title mb-0">@Model.Count()</h3>
+                        <p class="card-text text-muted mb-0">Total Orders</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-custom stat-card success">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon success me-3">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title mb-0">R @Model.Sum(o => o.TotalAmount).ToString("N2")</h3>
+                        <p class="card-text text-muted mb-0">Total Revenue</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-custom stat-card warning">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon warning me-3">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title mb-0">@Model.Count(o => o.Status == "Pending")</h3>
+                        <p class="card-text text-muted mb-0">Pending Orders</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="card card-custom mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search orders by ID, customer, or product...">
+                </div>
+            </div>
+            <div class="col-md-6 text-end">
+                <small class="text-muted">Showing @Model.Count() orders</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Orders Table -->
+@if (Model != null && Model.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-custom table-hover" id="ordersTable">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <strong>@item.OrderId</strong>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px; background: var(--primary-gradient);">
+                                    <span class="text-white fw-bold small">@(string.IsNullOrEmpty(item.CustomerName) ? "?" : item.CustomerName[0].ToString().ToUpper())</span>
+                                </div>
+                                <span>@item.CustomerName</span>
+                            </div>
+                        </td>
+                        <td>@item.ProductName</td>
+                        <td>@item.Quantity</td>
+                        <td>R @item.UnitPrice.ToString("N2")</td>
+                        <td><strong>R @item.TotalAmount.ToString("N2")</strong></td>
+                        <td>
+                            <span class="badge bg-@(item.Status == "Pending" ? "warning" : item.Status == "Delivered" ? "success" : item.Status == "Cancelled" ? "danger" : "info")">
+                                @item.Status
+                            </span>
+                        </td>
+                        <td>
+                            <small class="text-muted">@item.OrderDate.ToString("MMM dd, yyyy")</small>
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a asp-action="Details" asp-route-id="@item.OrderId" class="btn btn-info btn-sm" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@item.OrderId" class="btn btn-warning btn-sm" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.OrderId" class="btn btn-danger btn-sm" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="card card-custom">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-shopping-basket fa-3x text-muted mb-3"></i>
+            <h5 class="card-title">No Orders Found</h5>
+            <p class="card-text text-muted">Start by creating your first order</p>
+            <a asp-action="Create" class="btn btn-custom-primary btn-custom">
+                <i class="fas fa-plus me-2"></i>Create First Order
+            </a>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const table = document.getElementById('ordersTable');
+            
+            if (searchInput && table) {
+                searchInput.addEventListener('keyup', function() {
+                    const filter = this.value.toLowerCase();
+                    const rows = table.getElementsByTagName('tr');
+                    
+                    for (let i = 1; i < rows.length; i++) {
+                        const row = rows[i];
+                        const cells = row.getElementsByTagName('td');
+                        let found = false;
+                        
+                        for (let j = 0; j < cells.length; j++) {
+                            if (cells[j].textContent.toLowerCase().indexOf(filter) > -1) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        
+                        row.style.display = found ? '' : 'none';
+                    }
+                });
+            }
+        });
+    </script>
+}

@@ -1,0 +1,122 @@
+@model ABCRetailWebApp.Models.Customer
+
+@{
+    ViewData["Title"] = "Delete Customer";
+}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="mb-1"><i class="fas fa-user-times me-2" style="color: #f5576c;"></i>Delete Customer</h1>
+        <p class="text-muted mb-0">Remove customer from database</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-custom">
+        <i class="fas fa-arrow-left me-2"></i>Back to List
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card card-custom border-danger">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="rounded-circle bg-danger d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; background: var(--secondary-gradient);">
+                        <i class="fas fa-exclamation-triangle text-white fa-lg"></i>
+                    </div>
+                    <div>
+                        <h5 class="card-title mb-0 text-danger">Confirm Deletion</h5>
+                        <p class="card-text text-muted mb-0">This action cannot be undone</p>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Warning:</strong> You are about to delete <strong>@Model.FirstName @Model.LastName</strong>. This action is permanent and cannot be undone.
+                </div>
+
+                <div class="bg-light p-4 rounded mb-4">
+                    <h6 class="mb-3">Customer Information</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <small class="text-muted">Customer ID</small>
+                            <p class="mb-0 fw-bold">@Model.CustomerId</p>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <small class="text-muted">Full Name</small>
+                            <p class="mb-0 fw-bold">@Model.FirstName @Model.LastName</p>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <small class="text-muted">Email</small>
+                            <p class="mb-0">@Model.Email</p>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <small class="text-muted">Phone</small>
+                            <p class="mb-0">@Model.PhoneNumber</p>
+                        </div>
+                        <div class="col-12">
+                            <small class="text-muted">Address</small>
+                            <p class="mb-0">@Model.Address</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-info" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Note:</strong> Deleting this customer will also remove all associated order history and customer data from the system.
+                </div>
+
+                <form asp-action="DeleteConfirmed" asp-route-id="@Model.CustomerId">
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Details" asp-route-id="@Model.CustomerId" class="btn btn-outline-secondary btn-custom">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-danger btn-custom">
+                            <i class="fas fa-trash me-2"></i>Confirm Delete
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card card-custom mb-4">
+            <div class="card-body text-center">
+                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px; background: var(--primary-gradient);">
+                    <span class="text-white fw-bold" style="font-size: 2rem;">@(string.IsNullOrEmpty(Model.FirstName) ? "?" : Model.FirstName[0].ToString().ToUpper())</span>
+                </div>
+                <h5 class="card-title">@Model.FirstName @Model.LastName</h5>
+                <p class="card-text text-muted mb-3">@Model.Email</p>
+                <div class="d-flex justify-content-center gap-2">
+                    <span class="badge bg-danger">To Be Deleted</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-custom">
+            <div class="card-body">
+                <h5 class="card-title mb-3">
+                    <i class="fas fa-shield-alt me-2" style="color: #667eea;"></i>Safety Check
+                </h5>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Review customer details
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Check for active orders
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Confirm deletion action
+                    </li>
+                    <li class="mb-0">
+                        <i class="fas fa-exclamation text-danger me-2"></i>
+                        Action is irreversible
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

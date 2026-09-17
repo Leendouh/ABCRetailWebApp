@@ -1,0 +1,194 @@
+@model ABCRetailWebApp.Models.Order
+
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="mb-1"><i class="fas fa-receipt me-2" style="color: #667eea;"></i>Order Details</h1>
+        <p class="text-muted mb-0">View order information and status</p>
+    </div>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.OrderId" class="btn btn-custom-primary btn-custom me-2">
+            <i class="fas fa-edit me-2"></i>Edit Order
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-custom">
+            <i class="fas fa-arrow-left me-2"></i>Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-4">
+        <!-- Order Status Card -->
+        <div class="card card-custom mb-4">
+            <div class="card-body text-center">
+                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px; background: var(--primary-gradient);">
+                    <i class="fas fa-shopping-cart text-white fa-2x"></i>
+                </div>
+                <h4 class="card-title">@Model.OrderId</h4>
+                <p class="card-text text-muted mb-3">Order placed on @Model.OrderDate.ToString("MMM dd, yyyy")</p>
+                <div class="d-flex justify-content-center gap-2 mb-3">
+                    <span class="badge bg-@(Model.Status == "Pending" ? "warning" : Model.Status == "Delivered" ? "success" : Model.Status == "Cancelled" ? "danger" : "info") fs-6">
+                        @Model.Status
+                    </span>
+                </div>
+                <div class="d-flex justify-content-center gap-2">
+                    <span class="badge bg-primary">@(Model.CustomerName)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card card-custom">
+            <div class="card-body">
+                <h5 class="card-title mb-3">
+                    <i class="fas fa-bolt me-2" style="color: #667eea;"></i>Quick Actions
+                </h5>
+                <div class="d-grid gap-2">
+                    <a asp-action="Edit" asp-route-id="@Model.OrderId" class="btn btn-outline-warning btn-custom">
+                        <i class="fas fa-edit me-2"></i>Edit Order
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@Model.OrderId" class="btn btn-outline-danger btn-custom">
+                        <i class="fas fa-trash me-2"></i>Delete Order
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <!-- Order Information -->
+        <div class="card card-custom mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-4">
+                    <i class="fas fa-info-circle me-2" style="color: #667eea;"></i>Order Information
+                </h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Order ID</label>
+                        <p class="mb-0 fw-bold">@Model.OrderId</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Customer</label>
+                        <p class="mb-0 fw-bold">@Model.CustomerName</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Order Date</label>
+                        <p class="mb-0">
+                            <i class="fas fa-calendar text-muted me-1"></i>@Model.OrderDate.ToString("MMMM dd, yyyy HH:mm")
+                        </p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Status</label>
+                        <p class="mb-0">
+                            <span class="badge bg-@(Model.Status == "Pending" ? "warning" : Model.Status == "Delivered" ? "success" : Model.Status == "Cancelled" ? "danger" : "info")">
+                                @Model.Status
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="card card-custom mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-4">
+                    <i class="fas fa-list me-2" style="color: #667eea;"></i>Order Items
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.OrderItems != null && Model.OrderItems.Any())
+                            {
+                                @foreach (var item in Model.OrderItems)
+                                {
+                                    <tr>
+                                        <td>@item.ProductName</td>
+                                        <td>@item.Quantity</td>
+                                        <td>R @item.UnitPrice.ToString("N2")</td>
+                                        <td><strong>R @item.TotalPrice.ToString("N2")</strong></td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">No items in this order</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="card card-custom mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-4">
+                    <i class="fas fa-calculator me-2" style="color: #667eea;"></i>Order Summary
+                </h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-success d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background: var(--success-gradient);">
+                                    <i class="fas fa-dollar-sign text-white"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Total Amount</small>
+                                    <p class="mb-0 fw-bold">R @Model.TotalAmount.ToString("N2")</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background: var(--warning-gradient);">
+                                    <i class="fas fa-cubes text-white"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Total Quantity</small>
+                                    <p class="mb-0 fw-bold">@Model.Quantity units</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shipping Information -->
+        <div class="card card-custom">
+            <div class="card-body">
+                <h5 class="card-title mb-4">
+                    <i class="fas fa-map-marker-alt me-2" style="color: #667eea;"></i>Shipping Information
+                </h5>
+                <div class="p-4 bg-light rounded">
+                    <div class="d-flex">
+                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; background: var(--primary-gradient);">
+                            <i class="fas fa-home text-white fa-lg"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 fw-bold">@Model.ShippingAddress</p>
+                            <small class="text-muted">Delivery address for this order</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

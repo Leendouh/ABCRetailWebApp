@@ -1,0 +1,171 @@
+@model ABCRetailWebApp.Models.Customer
+
+@{
+    ViewData["Title"] = "Edit Customer";
+}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="mb-1"><i class="fas fa-user-edit me-2" style="color: #667eea;"></i>Edit Customer</h1>
+        <p class="text-muted mb-0">Update customer information</p>
+    </div>
+    <div>
+        <a asp-action="Details" asp-route-id="@Model.CustomerId" class="btn btn-outline-info btn-custom me-2">
+            <i class="fas fa-eye me-2"></i>View Details
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-custom">
+            <i class="fas fa-arrow-left me-2"></i>Back to List
+        </a>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card card-custom">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; background: var(--primary-gradient);">
+                        <i class="fas fa-user-edit text-white fa-lg"></i>
+                    </div>
+                    <div>
+                        <h5 class="card-title mb-0">Edit Customer Information</h5>
+                        <p class="card-text text-muted mb-0">Update the details below</p>
+                    </div>
+                </div>
+
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Please fix the errors below
+                    </div>
+                    <input type="hidden" asp-for="CustomerId" />
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="FirstName" class="form-label fw-bold">
+                                    <i class="fas fa-user me-1"></i>First Name
+                                </label>
+                                <input asp-for="FirstName" class="form-control" placeholder="Enter first name" required />
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="LastName" class="form-label fw-bold">
+                                    <i class="fas fa-user me-1"></i>Last Name
+                                </label>
+                                <input asp-for="LastName" class="form-control" placeholder="Enter last name" required />
+                                <span asp-validation-for="LastName" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Email" class="form-label fw-bold">
+                            <i class="fas fa-envelope me-1"></i>Email Address
+                        </label>
+                        <input asp-for="Email" class="form-control" type="email" placeholder="customer@example.com" required />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                        <small class="text-muted">We'll never share your email with anyone else.</small>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="PhoneNumber" class="form-label fw-bold">
+                            <i class="fas fa-phone me-1"></i>Phone Number
+                        </label>
+                        <input asp-for="PhoneNumber" class="form-control" placeholder="+27 12 345 6789" required />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label asp-for="Address" class="form-label fw-bold">
+                            <i class="fas fa-map-marker-alt me-1"></i>Shipping Address
+                        </label>
+                        <textarea asp-for="Address" class="form-control" rows="4" placeholder="Enter complete shipping address" required></textarea>
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary btn-custom">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-custom-primary btn-custom">
+                            <i class="fas fa-save me-2"></i>Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card card-custom mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">
+                    <i class="fas fa-info-circle me-2" style="color: #667eea;"></i>Current Customer
+                </h5>
+                <div class="d-flex align-items-center mb-3">
+                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; background: var(--primary-gradient);">
+                        <span class="text-white fw-bold">@(string.IsNullOrEmpty(Model.FirstName) ? "?" : Model.FirstName[0].ToString().ToUpper())</span>
+                    </div>
+                    <div>
+                        <h6 class="mb-0">@Model.FirstName @Model.LastName</h6>
+                        <small class="text-muted">@Model.Email</small>
+                    </div>
+                </div>
+                <hr />
+                <div class="mb-2">
+                    <small class="text-muted">Customer ID</small>
+                    <p class="mb-0 fw-bold">@Model.CustomerId.Substring(0, 8)...</p>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted">Created</small>
+                    <p class="mb-0 fw-bold">@Model.CreatedAt.ToString("MMM dd, yyyy")</p>
+                </div>
+                <div>
+                    <small class="text-muted">Account Age</small>
+                    <p class="mb-0 fw-bold">@((DateTime.Now - Model.CreatedAt).Days) days</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card card-custom">
+            <div class="card-body">
+                <h5 class="card-title mb-3">
+                    <i class="fas fa-lightbulb me-2" style="color: #667eea;"></i>Edit Tips
+                </h5>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Keep email address up to date
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Update phone if changed
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Maintain current address
+                    </li>
+                    <li class="mb-0">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Save changes when done
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
